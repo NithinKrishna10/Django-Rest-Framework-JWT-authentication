@@ -33,7 +33,7 @@ User
     
 @api_view(['POST'])
 def LoginView(request):
-
+    print("hai Login View")
     try:
         email = request.data['email']
         password = request.data['password']
@@ -41,19 +41,19 @@ def LoginView(request):
         return Response({'status':'Please provide the mentioned details'})
     
     try:
-        user = Account.objects.get(email=email,password=password)
+        user = Account.objects.get(email=email)
         print(user)
         if user is not None:
             # print('kkkkkkkkkkkk')
-            if user.is_superuser is False:
-                payload = {
+
+            payload = {
                     'email':user.email,
                     'password':user.password,
 
                 }
-                jwt_token = jwt.encode(payload, 'secret', algorithm='HS256')
-                # print(jwt_token,"toooooooooooken")
-                return Response({'status' : "Success",'payload' : payload ,'user_jwt': jwt_token,'id':user.id})
+            jwt_token = jwt.encode(payload, 'secret', algorithm='HS256')
+            print(jwt_token,"toooooooooooken")
+            return Response({'status' : "Success",'payload' : payload ,'user_jwt': jwt_token,'id':user.id})
     except:
         if User.DoesNotExist:
             return Response("Email or Password is Wrong")
@@ -122,7 +122,7 @@ def addImage(request,id):
 def user_list(request):
     user = Account.objects.all()
     serializer = UserSerializer(user,many=True)
-    print(serializer.data)
+    # print(serializer.data)
     return Response(serializer.data)
 
 
@@ -168,7 +168,7 @@ def edit_user(request,id):
 @api_view(['PUT'])
 def update_user(request,id):
     user = Account.objects.get(id=id)
-    user.name = request.data["username"]
+    user.full_name = request.data["username"]
     user.email = request.data["email"]
     user.save()
     return Response("User Updated")
